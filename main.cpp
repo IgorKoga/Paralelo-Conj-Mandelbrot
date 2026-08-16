@@ -91,7 +91,7 @@ int main(){
 
     cout << "Tempo std::thread (" << qtdThreads << " threads): " << tempoTotalStdThread.count() << " ms" << endl;
 
-    salvarImagemPPM("mandelbrot.ppm", imagemSaida, 1920, 1080, maxIter);
+    salvarImagemPPM("std_thread.ppm", imagemSaida, 1920, 1080, maxIter);
 
     return 0;
 }
