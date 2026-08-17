@@ -1,0 +1,5 @@
+{
+  "code-runner.executorMap": {
+    "cpp": "cd $dir && g++ -O3 -std=c++17 $fileName -o C:\\mingw64\\bin\\$fileNameWithoutExt.exe -ltbb && C:\\mingw64\\bin\\$fileNameWithoutExt.exe"
+  }
+}

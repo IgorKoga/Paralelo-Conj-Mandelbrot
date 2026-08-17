@@ -1,0 +1,1 @@
+usando o imagemagick use o comando "magick std_thread.ppm std_thread.jpg" para transformar o arquivo de ppm para jpg.
