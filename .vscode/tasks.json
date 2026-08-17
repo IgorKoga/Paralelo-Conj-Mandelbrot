@@ -1,0 +1,31 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "cppbuild",
+      "label": "C/C++: g++.exe build active file with TBB",
+      "command": "C:\\mingw64\\bin\\g++.exe",
+      "args": [
+        "-fdiagnostics-color=always",
+        "-g",
+        "-O3",
+        "-std=c++17",
+        "${file}",
+        "-o",
+        "C:\\mingw64\\bin\\${fileBasenameNoExtension}.exe",
+        "-ltbb"
+      ],
+      "options": {
+        "cwd": "${fileDirname}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "detail": "Compiler: C:\\mingw64\\bin\\g++.exe"
+    }
+  ]
+}
