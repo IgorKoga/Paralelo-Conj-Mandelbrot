@@ -2,6 +2,7 @@
 #include <chrono>
 #include <fstream>
 #include <iostream>
+#include <omp.h>
 #include <thread>
 #include <vector>
 
@@ -10,7 +11,6 @@
 #include <tbb/blocked_range2d.h>
 #include <tbb/global_control.h>
 #include <tbb/parallel_for.h>
-
 
 using namespace std;
 
@@ -85,13 +85,41 @@ void salvarImagemPPM(const string &filename, const vector<int> &imagem,
   }
 }
 
+// código inicializador da abordagem OpenMP
+vector<int> openmpThreads(vector<int> &imagem, int qtdThreads, int maxIter) {
+  #pragma omp parallel for num_threads(qtdThreads) schedule(dynamic)
+  for (int y = 0; y < 1080; y++) {
+    double c_imag = -1.2 + (double)y / 1080.0 * (1.2 - (-1.2));
+
+    for (int x = 0; x < 1920; x++) {
+      double c_real = -2.0 + (double)x / 1920.0 * (1.0 - (-2.0));
+
+      double zx = 0.0;
+      double zy = 0.0;
+      int iter = 0;
+
+      while (zx * zx + zy * zy <= 4.0 && iter < maxIter) {
+        double temp_zx = zx * zx - zy * zy + c_real;
+        zy = 2.0 * zx * zy + c_imag;
+        zx = temp_zx;
+        iter++;
+      }
+
+      imagem[y * 1920 + x] = iter;
+    }
+  }
+
+  return imagem;
+}
+
 // código inicializador da abordagem Intel TBB
 vector<int> tbbThreads(vector<int> &imagem, int qtdThreads, int maxIter) {
   // Define o número de threads/concorrência no TBB
   tbb::global_control global_limit(tbb::global_control::max_allowed_parallelism,
                                    qtdThreads);
 
-  // tbb::parallel_for dividindo as linhas (0 a 1080) e colunas (0 a 1920) em blocos 2D
+  // tbb::parallel_for dividindo as linhas (0 a 1080) e colunas (0 a 1920) em
+  // blocos 2D
   tbb::parallel_for(
       tbb::blocked_range2d<int, int>(0, 1080, 0, 1920),
       [&](const tbb::blocked_range2d<int, int> &r) {
@@ -136,7 +164,19 @@ int main() {
 
   salvarImagemPPM("std_thread.ppm", imagemStd, 1920, 1080, maxIter);
 
-  // 2. Executa com Intel TBB
+  // 2. Executa com OpenMP
+  vector<int> imagemOmp(1920 * 1080, 0);
+  auto inicioOmp = chrono::high_resolution_clock::now();
+  openmpThreads(imagemOmp, qtdThreads, maxIter);
+  auto fimOmp = chrono::high_resolution_clock::now();
+
+  chrono::duration<double, milli> tempoTotalOmp = fimOmp - inicioOmp;
+  cout << "Tempo OpenMP      (" << qtdThreads
+       << " threads): " << tempoTotalOmp.count() << " ms" << endl;
+
+  salvarImagemPPM("openmp_thread.ppm", imagemOmp, 1920, 1080, maxIter);
+
+  // 3. Executa com Intel TBB
   vector<int> imagemTbb(1920 * 1080, 0);
   auto inicioTbb = chrono::high_resolution_clock::now();
   tbbThreads(imagemTbb, qtdThreads, maxIter);
