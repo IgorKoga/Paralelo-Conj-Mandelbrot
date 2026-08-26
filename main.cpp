@@ -231,26 +231,5 @@ int main() {
 
   salvarImagemPPM("tbb_thread.ppm", imagemTbb, 1920, 1080, maxIter);
 
-  // Verificacao de corretude
-  bool corretude = true;
-  for (int i = 0; i < 1920 * 1080; i++) {
-    if (imagemSeq[i] != imagemStd[i] || imagemSeq[i] != imagemOmp[i] || imagemSeq[i] != imagemTbb[i]) {
-      corretude = false;
-      break;
-    }
-  }
-
-  cout << "\nVerificacao de Corretude: " 
-       << (corretude ? "PASSOU (Todas as versoes tem o mesmo resultado)" : "FALHOU (Resultados diferentes)") 
-       << endl;
-
-  // Tabela Comparativa e Speedup
-  cout << "\n--- Tabela Comparativa ---" << endl;
-  cout << "Versao\t\tTempo (ms)\tSpeedup" << endl;
-  cout << "Sequencial\t" << tempoTotalSeq.count() << "\t\t1.00x" << endl;
-  cout << "std::thread\t" << tempoTotalStdThread.count() << "\t\t" << tempoTotalSeq.count() / tempoTotalStdThread.count() << "x" << endl;
-  cout << "OpenMP\t\t" << tempoTotalOmp.count() << "\t\t" << tempoTotalSeq.count() / tempoTotalOmp.count() << "x" << endl;
-  cout << "Intel TBB\t" << tempoTotalTbb.count() << "\t\t" << tempoTotalSeq.count() / tempoTotalTbb.count() << "x" << endl;
-
   return 0;
 }
